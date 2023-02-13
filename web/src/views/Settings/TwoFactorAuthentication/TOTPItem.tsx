@@ -1,69 +1,28 @@
 import React, { Fragment, useState } from "react";
 
-import { Fingerprint } from "@mui/icons-material";
+import { QrCode2 } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Box, Button, CircularProgress, Paper, Stack, Tooltip, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 import { useNotifications } from "@hooks/NotificationsContext";
-import { WebauthnDevice } from "@models/Webauthn";
-import { deleteDevice, updateDevice } from "@services/Webauthn";
+import { UserInfoTOTPConfiguration, toAlgorithmString } from "@models/TOTPConfiguration";
 import DeleteDialog from "@views/Settings/TwoFactorAuthentication/DeleteDialog";
-import WebauthnDeviceDeleteDialog from "@views/Settings/TwoFactorAuthentication/WebauthnDeviceDeleteDialog";
-import WebauthnDeviceDetailsDialog from "@views/Settings/TwoFactorAuthentication/WebauthnDeviceDetailsDialog";
-import WebauthnDeviceEditDialog from "@views/Settings/TwoFactorAuthentication/WebauthnDeviceEditDialog";
 
 interface Props {
     index: number;
-    device: WebauthnDevice;
-    handleEdit: () => void;
+    config: UserInfoTOTPConfiguration;
+    handleRefresh: () => void;
 }
 
-export default function WebauthnDeviceItem(props: Props) {
+export default function TOTPItem(props: Props) {
     const { t: translate } = useTranslation("settings");
 
     const { createSuccessNotification, createErrorNotification } = useNotifications();
 
-    const [showDialogDetails, setShowDialogDetails] = useState<boolean>(false);
-    const [showDialogEdit, setShowDialogEdit] = useState<boolean>(false);
     const [showDialogDelete, setShowDialogDelete] = useState<boolean>(false);
 
-    const [loadingEdit, setLoadingEdit] = useState<boolean>(false);
     const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
-
-    const handleEdit = async (ok: boolean, name: string) => {
-        setShowDialogEdit(false);
-
-        if (!ok) {
-            return;
-        }
-
-        setLoadingEdit(true);
-
-        const response = await updateDevice(props.device.id, name);
-
-        setLoadingEdit(false);
-
-        if (response.data.status === "KO") {
-            if (response.data.elevation) {
-                createErrorNotification(translate("You must be elevated to update Webauthn credentials"));
-            } else if (response.data.authentication) {
-                createErrorNotification(
-                    translate("You must have a higher authentication level to update Webauthn credentials"),
-                );
-            } else {
-                createErrorNotification(translate("There was a problem updating the Webauthn credential"));
-            }
-
-            return;
-        }
-
-        createSuccessNotification(translate("Successfully updated the Webauthn credential"));
-
-        props.handleEdit();
-    };
 
     const handleDelete = async (ok: boolean) => {
         setShowDialogDelete(false);
@@ -74,10 +33,11 @@ export default function WebauthnDeviceItem(props: Props) {
 
         setLoadingDelete(true);
 
-        const response = await deleteDevice(props.device.id);
+        // const response = await deleteDevice(props.device.id);
 
         setLoadingDelete(false);
 
+        /*
         if (response.data.status === "KO") {
             if (response.data.elevation) {
                 createErrorNotification(translate("You must be elevated to delete Webauthn credentials"));
@@ -92,15 +52,18 @@ export default function WebauthnDeviceItem(props: Props) {
             return;
         }
 
-        createSuccessNotification(translate("Successfully deleted the Webauthn credential"));
+         */
 
-        props.handleEdit();
+        createSuccessNotification(translate("Successfully deleted the One Time Password configuration"));
+
+        props.handleRefresh();
     };
 
     return (
         <Fragment>
             <Paper variant="outlined">
                 <Box sx={{ p: 3 }}>
+                    {/*
                     <WebauthnDeviceDetailsDialog
                         device={props.device}
                         open={showDialogDetails}
@@ -109,32 +72,40 @@ export default function WebauthnDeviceItem(props: Props) {
                         }}
                     />
                     <WebauthnDeviceEditDialog device={props.device} open={showDialogEdit} handleClose={handleEdit} />
+                    <WebauthnDeviceDeleteDialog
+                        device={props.device}
+                        open={showDialogDelete}
+                        handleClose={handleDelete}
+                    />
+                    */}
                     <DeleteDialog
                         open={showDialogDelete}
                         handleClose={handleDelete}
-                        title={translate("Remove Webauthn Credential")}
+                        title={translate("Remove One Time Password")}
                         text={translate(
-                            "Are you sure you want to remove the Webauthn credential from from your account",
-                            {
-                                description: props.device.description,
-                            },
+                            "Are you sure you want to remove the Time-based One Time Password from from your account",
                         )}
                     />
                     <Stack direction="row" spacing={1} alignItems="center">
-                        <Fingerprint fontSize="large" color={"warning"} />
+                        <QrCode2 fontSize="large" />
                         <Stack spacing={0} sx={{ minWidth: 400 }}>
                             <Box>
                                 <Typography display="inline" sx={{ fontWeight: "bold" }}>
-                                    {props.device.description}
+                                    {props.config.issuer}
                                 </Typography>
-                                <Typography
-                                    display="inline"
-                                    variant="body2"
-                                >{` (${props.device.attestation_type.toUpperCase()})`}</Typography>
+                                <Typography display="inline" variant="body2">
+                                    {" (" +
+                                        translate("{{algorithm}}, {{digits}} digits, {{seconds}} seconds", {
+                                            algorithm: toAlgorithmString(props.config.algorithm),
+                                            digits: props.config.digits,
+                                            seconds: props.config.period,
+                                        }) +
+                                        ")"}
+                                </Typography>
                             </Box>
                             <Typography variant={"caption"}>
                                 {translate("Added", {
-                                    when: new Date(props.device.created_at),
+                                    when: props.config.created_at,
                                     formatParams: {
                                         when: {
                                             hour: "numeric",
@@ -147,10 +118,10 @@ export default function WebauthnDeviceItem(props: Props) {
                                 })}
                             </Typography>
                             <Typography variant={"caption"}>
-                                {props.device.last_used_at === undefined
+                                {props.config.last_used_at === undefined
                                     ? translate("Never used")
                                     : translate("Last Used", {
-                                          when: new Date(props.device.last_used_at),
+                                          when: props.config.last_used_at,
                                           formatParams: {
                                               when: {
                                                   hour: "numeric",
@@ -164,27 +135,7 @@ export default function WebauthnDeviceItem(props: Props) {
                             </Typography>
                         </Stack>
 
-                        <Tooltip title={translate("Display extended information for this Webauthn credential")}>
-                            <Button
-                                variant="outlined"
-                                color="primary"
-                                startIcon={<InfoOutlinedIcon />}
-                                onClick={() => setShowDialogDetails(true)}
-                            >
-                                {translate("Info")}
-                            </Button>
-                        </Tooltip>
-                        <Tooltip title={translate("Edit information for this Webauthn credential")}>
-                            <Button
-                                variant="outlined"
-                                color="primary"
-                                startIcon={loadingEdit ? <CircularProgress color="inherit" size={20} /> : <EditIcon />}
-                                onClick={loadingEdit ? undefined : () => setShowDialogEdit(true)}
-                            >
-                                {translate("Edit")}
-                            </Button>
-                        </Tooltip>
-                        <Tooltip title={translate("Remove this Webauthn credential")}>
+                        <Tooltip title={translate("Remove the Time-based One Time Password configuration")}>
                             <Button
                                 variant="outlined"
                                 color="primary"

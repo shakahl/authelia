@@ -18,26 +18,26 @@ func ValidateTOTP(config *schema.Configuration, validator *schema.StructValidato
 		config.TOTP.Issuer = schema.DefaultTOTPConfiguration.Issuer
 	}
 
-	if config.TOTP.Algorithm == "" {
-		config.TOTP.Algorithm = schema.DefaultTOTPConfiguration.Algorithm
+	if config.TOTP.DefaultAlgorithm == "" {
+		config.TOTP.DefaultAlgorithm = schema.DefaultTOTPConfiguration.DefaultAlgorithm
 	} else {
-		config.TOTP.Algorithm = strings.ToUpper(config.TOTP.Algorithm)
+		config.TOTP.DefaultAlgorithm = strings.ToUpper(config.TOTP.DefaultAlgorithm)
 
-		if !utils.IsStringInSlice(config.TOTP.Algorithm, schema.TOTPPossibleAlgorithms) {
-			validator.Push(fmt.Errorf(errFmtTOTPInvalidAlgorithm, strings.Join(schema.TOTPPossibleAlgorithms, "', '"), config.TOTP.Algorithm))
+		if !utils.IsStringInSlice(config.TOTP.DefaultAlgorithm, schema.TOTPPossibleAlgorithms) {
+			validator.Push(fmt.Errorf(errFmtTOTPInvalidAlgorithm, strings.Join(schema.TOTPPossibleAlgorithms, "', '"), config.TOTP.DefaultAlgorithm))
 		}
 	}
 
-	if config.TOTP.Period == 0 {
-		config.TOTP.Period = schema.DefaultTOTPConfiguration.Period
-	} else if config.TOTP.Period < 15 {
-		validator.Push(fmt.Errorf(errFmtTOTPInvalidPeriod, config.TOTP.Period))
+	if config.TOTP.DefaultPeriod == 0 {
+		config.TOTP.DefaultPeriod = schema.DefaultTOTPConfiguration.DefaultPeriod
+	} else if config.TOTP.DefaultPeriod < 15 {
+		validator.Push(fmt.Errorf(errFmtTOTPInvalidPeriod, config.TOTP.DefaultPeriod))
 	}
 
-	if config.TOTP.Digits == 0 {
-		config.TOTP.Digits = schema.DefaultTOTPConfiguration.Digits
-	} else if config.TOTP.Digits != 6 && config.TOTP.Digits != 8 {
-		validator.Push(fmt.Errorf(errFmtTOTPInvalidDigits, config.TOTP.Digits))
+	if config.TOTP.DefaultDigits == 0 {
+		config.TOTP.DefaultDigits = schema.DefaultTOTPConfiguration.DefaultDigits
+	} else if config.TOTP.DefaultDigits != 6 && config.TOTP.DefaultDigits != 8 {
+		validator.Push(fmt.Errorf(errFmtTOTPInvalidDigits, config.TOTP.DefaultDigits))
 	}
 
 	if config.TOTP.Skew == nil {

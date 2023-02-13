@@ -7,9 +7,8 @@ package mocks
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-
 	model "github.com/authelia/authelia/v4/internal/model"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockTOTP is a mock of Provider interface.
@@ -63,6 +62,20 @@ func (m *MockTOTP) GenerateCustom(arg0, arg1, arg2 string, arg3, arg4, arg5 uint
 func (mr *MockTOTPMockRecorder) GenerateCustom(arg0, arg1, arg2, arg3, arg4, arg5 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateCustom", reflect.TypeOf((*MockTOTP)(nil).GenerateCustom), arg0, arg1, arg2, arg3, arg4, arg5)
+}
+
+// Options mocks base method.
+func (m *MockTOTP) Options() model.TOTPOptions {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Options")
+	ret0, _ := ret[0].(model.TOTPOptions)
+	return ret0
+}
+
+// Options indicates an expected call of Options.
+func (mr *MockTOTPMockRecorder) Options() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Options", reflect.TypeOf((*MockTOTP)(nil).Options))
 }
 
 // Validate mocks base method.

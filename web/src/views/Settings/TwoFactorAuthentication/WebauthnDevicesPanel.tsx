@@ -12,7 +12,7 @@ interface Props {
     state: AutheliaState;
 }
 
-export default function WebauthnDevices(props: Props) {
+export default function WebauthnDevicesPanel(props: Props) {
     const { t: translate } = useTranslation("settings");
 
     const [showWebauthnDeviceRegisterDialog, setShowWebauthnDeviceRegisterDialog] = useState<boolean>(false);

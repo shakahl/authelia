@@ -3,8 +3,10 @@ import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import { IndexRoute, SettingsTwoFactorAuthenticationSubRoute } from "@constants/Routes";
+import { useNotifications } from "@hooks/NotificationsContext";
 import { useRouterNavigate } from "@hooks/RouterNavigate";
 import { useAutheliaState } from "@hooks/State";
+import { useUserInfoPOST } from "@hooks/UserInfo";
 import SettingsLayout from "@layouts/SettingsLayout";
 import { AuthenticationLevel } from "@services/State";
 import SettingsView from "@views/Settings/SettingsView";
@@ -14,9 +16,11 @@ export interface Props {}
 
 const SettingsRouter = function (props: Props) {
     const navigate = useRouterNavigate();
-    const [state, fetchState, , fetchStateError] = useAutheliaState();
+    const { createErrorNotification } = useNotifications();
 
-    // Fetch the state on page load
+    const [state, fetchState, , fetchStateError] = useAutheliaState();
+    const [info, fetchInfo, , fetchInfoError] = useUserInfoPOST();
+
     useEffect(() => {
         fetchState();
     }, [fetchState]);
@@ -24,8 +28,20 @@ const SettingsRouter = function (props: Props) {
     useEffect(() => {
         if (fetchStateError || (state && state.authentication_level < AuthenticationLevel.OneFactor)) {
             navigate(IndexRoute);
+
+            return;
         }
-    }, [state, fetchStateError, navigate]);
+
+        fetchInfo();
+    }, [state, fetchStateError, navigate, fetchInfo]);
+
+    useEffect(() => {
+        if (fetchInfoError) {
+            createErrorNotification("There was an issue retrieving user preferences");
+        }
+    }, [fetchInfoError, createErrorNotification]);
+
+    const ready = state && info;
 
     return (
         <SettingsLayout>
@@ -33,7 +49,7 @@ const SettingsRouter = function (props: Props) {
                 <Route path={IndexRoute} element={<SettingsView />} />
                 <Route
                     path={SettingsTwoFactorAuthenticationSubRoute}
-                    element={<TwoFactorAuthenticationView state={state} />}
+                    element={ready ? <TwoFactorAuthenticationView state={state} info={info} /> : null}
                 />
             </Routes>
         </SettingsLayout>

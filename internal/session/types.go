@@ -3,6 +3,7 @@ package session
 import (
 	"time"
 
+	"github.com/authelia/authelia/v4/internal/model"
 	"github.com/fasthttp/session/v2"
 	"github.com/go-webauthn/webauthn/webauthn"
 
@@ -37,6 +38,7 @@ type UserSession struct {
 
 	// Webauthn holds the session registration data for this session.
 	Webauthn *Webauthn
+	TOTP     *model.TOTPConfiguration
 
 	// This boolean is set to true after identity verification and checked
 	// while doing the query actually updating the password.

@@ -229,9 +229,9 @@ func handleRouter(config *schema.Configuration, providers middlewares.Providers)
 	if !config.TOTP.Disable {
 		// TOTP related endpoints.
 		r.GET("/api/user/info/totp", middleware1FA(handlers.UserTOTPInfoGET))
-		r.POST("/api/secondfactor/totp/identity/start", middleware1FA(handlers.TOTPIdentityStart))
-		r.POST("/api/secondfactor/totp/identity/finish", middleware1FA(handlers.TOTPIdentityFinish))
 		r.POST("/api/secondfactor/totp", middleware1FA(handlers.TimeBasedOneTimePasswordPOST))
+		r.GET("/api/secondfactor/totp/register/options", middleware1FA(handlers.TOTPRegisterOptionsGET))
+		r.PUT("/api/secondfactor/totp/register", middleware1FA(handlers.TOTPRegisterPUT))
 	}
 
 	if !config.Webauthn.Disable {

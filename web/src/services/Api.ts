@@ -11,6 +11,9 @@ export const FirstFactorPath = basePath + "/api/firstfactor";
 export const InitiateTOTPRegistrationPath = basePath + "/api/secondfactor/totp/identity/start";
 export const CompleteTOTPRegistrationPath = basePath + "/api/secondfactor/totp/identity/finish";
 
+export const TOTPRegistrationOptionsPath = basePath + "/api/secondfactor/totp/register/options";
+export const TOTPRegistrationPath = basePath + "/api/secondfactor/totp/register";
+
 export const WebauthnRegistrationPath = basePath + "/api/secondfactor/webauthn/credential/register";
 
 export const WebauthnAssertionPath = basePath + "/api/secondfactor/webauthn";

@@ -10,7 +10,6 @@
         "react-dom": "18"
       },
       "ignoreMissing": [
-        "@babel/core",
         "@babel/plugin-syntax-flow",
         "@babel/plugin-transform-react-jsx",
         "prop-types"
@@ -75,7 +74,6 @@
     "@commitlint/config-conventional": "17.4.4",
     "@limegrass/eslint-plugin-import-alias": "1.0.6",
     "@testing-library/react": "14.0.0",
-    "@types/jest": "29.4.0",
     "@types/node": "18.14.0",
     "@types/qrcode.react": "1.0.2",
     "@types/react": "18.0.28",
@@ -84,7 +82,7 @@
     "@typescript-eslint/eslint-plugin": "5.52.0",
     "@typescript-eslint/parser": "5.52.0",
     "@vitejs/plugin-react": "3.1.0",
-    "@vitest/coverage-c8": "0.28.5",
+    "@vitest/coverage-istanbul": "0.28.5",
     "esbuild": "0.17.8",
     "eslint": "8.34.0",
     "eslint-config-prettier": "8.6.0",
